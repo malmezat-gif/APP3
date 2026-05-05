@@ -16,6 +16,16 @@ from interface import nom_ville_depuis_chemin
 from itineraire import decrire_itineraire, dijkstra, formater_temps
 
 
+FOND = "#edf2f7"
+CARTE = "#ffffff"
+TEXTE = "#172033"
+TEXTE_DISCRET = "#64748b"
+BLEU = "#2563eb"
+BLEU_FONCE = "#1d4ed8"
+VERT = "#16a34a"
+ROUGE = "#dc2626"
+BORDURE = "#d8dee9"
+
 COULEURS_LIGNES = {
     "rouge": "#d83a34",
     "bleu": "#2d6cdf",
@@ -50,8 +60,8 @@ class ApplicationItineraire:
     def __init__(self, fenetre):
         self.fenetre = fenetre
         self.fenetre.title("APP3 - Calculateur d'itinéraires")
-        self.fenetre.geometry("1120x720")
-        self.fenetre.minsize(900, 620)
+        self.fenetre.geometry("1180x760")
+        self.fenetre.minsize(980, 650)
 
         self.fichiers = lister_fichiers_reseaux()
         self.reseau = None
@@ -67,27 +77,52 @@ class ApplicationItineraire:
         """Prépare un style sobre pour les composants."""
         style = ttk.Style()
         style.theme_use("clam")
-        style.configure("TFrame", background="#f5f6f8")
-        style.configure("Panel.TFrame", background="white", relief="solid", borderwidth=1)
-        style.configure("TLabel", background="#f5f6f8", foreground="#1f2933")
-        style.configure("Panel.TLabel", background="white", foreground="#1f2933")
-        style.configure("Title.TLabel", font=("Arial", 18, "bold"))
-        style.configure("SubTitle.TLabel", font=("Arial", 11, "bold"))
-        style.configure("TButton", padding=8)
-        style.configure("Primary.TButton", padding=8)
+        style.configure("TFrame", background=FOND)
+        style.configure("Panel.TFrame", background=CARTE, relief="flat")
+        style.configure("TLabel", background=FOND, foreground=TEXTE)
+        style.configure("Panel.TLabel", background=CARTE, foreground=TEXTE)
+        style.configure("Title.TLabel", font=("Arial", 22, "bold"), foreground=TEXTE)
+        style.configure("Small.TLabel", font=("Arial", 10), foreground=TEXTE_DISCRET)
+        style.configure(
+            "SubTitle.TLabel",
+            background=CARTE,
+            foreground=TEXTE,
+            font=("Arial", 11, "bold"),
+        )
+        style.configure("TButton", padding=8, font=("Arial", 10))
+        style.configure("Primary.TButton", padding=10, font=("Arial", 10, "bold"))
+        style.map("Primary.TButton", foreground=[("active", "white")])
+        style.configure(
+            "Primary.TButton",
+            background=BLEU,
+            foreground="white",
+            bordercolor=BLEU,
+            lightcolor=BLEU,
+            darkcolor=BLEU,
+        )
+        style.configure("TCombobox", padding=5)
 
     def creer_interface(self):
         """Crée tous les éléments visibles."""
-        self.fenetre.configure(bg="#f5f6f8")
+        self.fenetre.configure(bg=FOND)
 
-        principal = ttk.Frame(self.fenetre, padding=16)
+        principal = ttk.Frame(self.fenetre, padding=18)
         principal.pack(fill="both", expand=True)
 
         haut = ttk.Frame(principal)
         haut.pack(fill="x")
 
-        titre = ttk.Label(haut, text="Calculateur d'itinéraires", style="Title.TLabel")
-        titre.pack(side="left")
+        bloc_titre = ttk.Frame(haut)
+        bloc_titre.pack(side="left")
+
+        titre = ttk.Label(bloc_titre, text="Calculateur d'itinéraires", style="Title.TLabel")
+        titre.pack(anchor="w")
+        sous_titre = ttk.Label(
+            bloc_titre,
+            text="Métro et tramway - recherche du trajet le plus rapide",
+            style="Small.TLabel",
+        )
+        sous_titre.pack(anchor="w", pady=(2, 0))
 
         bouton_console = ttk.Button(
             haut,
@@ -97,13 +132,13 @@ class ApplicationItineraire:
         bouton_console.pack(side="right")
 
         contenu = ttk.Frame(principal)
-        contenu.pack(fill="both", expand=True, pady=(14, 0))
+        contenu.pack(fill="both", expand=True, pady=(18, 0))
 
-        gauche = ttk.Frame(contenu, style="Panel.TFrame", padding=14)
+        gauche = ttk.Frame(contenu, style="Panel.TFrame", padding=18)
         gauche.pack(side="left", fill="y")
 
         droite = ttk.Frame(contenu)
-        droite.pack(side="left", fill="both", expand=True, padx=(14, 0))
+        droite.pack(side="left", fill="both", expand=True, padx=(18, 0))
 
         self.creer_panneau_choix(gauche)
         self.creer_panneau_resultat(droite)
@@ -111,6 +146,13 @@ class ApplicationItineraire:
     def creer_panneau_choix(self, parent):
         """Crée le panneau de gauche avec les choix utilisateur."""
         largeur = 32
+
+        ttk.Label(parent, text="Préparer le trajet", style="SubTitle.TLabel").pack(anchor="w")
+        ttk.Label(
+            parent,
+            text="Choisis le réseau puis les deux stations.",
+            style="Panel.TLabel",
+        ).pack(anchor="w", pady=(3, 18))
 
         ttk.Label(parent, text="Ville", style="Panel.TLabel").pack(anchor="w")
         self.choix_ville = ttk.Combobox(parent, state="readonly", width=largeur)
@@ -154,32 +196,55 @@ class ApplicationItineraire:
         separateur.pack(fill="x", pady=16)
 
         ttk.Label(parent, text="Informations", style="SubTitle.TLabel").pack(anchor="w")
-        self.infos = tk.Text(parent, width=34, height=10, wrap="word", borderwidth=0)
+        self.infos = tk.Text(parent, width=34, height=11, wrap="word", borderwidth=0)
         self.infos.pack(fill="x", pady=(6, 0))
-        self.infos.configure(state="disabled", background="white", foreground="#1f2933")
+        self.infos.configure(
+            state="disabled",
+            background="#f8fafc",
+            foreground=TEXTE,
+            font=("Arial", 10),
+            padx=10,
+            pady=8,
+        )
 
     def creer_panneau_resultat(self, parent):
         """Crée la zone de résultat et le dessin."""
-        self.resume = ttk.Label(parent, text="Choisis une ville et deux stations.")
-        self.resume.pack(anchor="w")
+        self.resume = tk.Label(
+            parent,
+            text="Choisis une ville et deux stations.",
+            background="#dbeafe",
+            foreground=BLEU_FONCE,
+            font=("Arial", 11, "bold"),
+            padx=12,
+            pady=8,
+            anchor="w",
+        )
+        self.resume.pack(fill="x")
 
         zone = ttk.PanedWindow(parent, orient="vertical")
         zone.pack(fill="both", expand=True, pady=(8, 0))
 
-        panneau_texte = ttk.Frame(zone, style="Panel.TFrame", padding=10)
-        panneau_dessin = ttk.Frame(zone, style="Panel.TFrame", padding=10)
+        panneau_texte = ttk.Frame(zone, style="Panel.TFrame", padding=14)
+        panneau_dessin = ttk.Frame(zone, style="Panel.TFrame", padding=14)
         zone.add(panneau_texte, weight=1)
         zone.add(panneau_dessin, weight=3)
 
-        ttk.Label(panneau_texte, text="Itinéraire", style="Panel.TLabel").pack(anchor="w")
+        ttk.Label(panneau_texte, text="Itinéraire proposé", style="SubTitle.TLabel").pack(anchor="w")
         self.resultat_texte = tk.Text(panneau_texte, height=9, wrap="word", borderwidth=0)
         self.resultat_texte.pack(fill="both", expand=True, pady=(6, 0))
-        self.resultat_texte.configure(state="disabled", background="white")
+        self.resultat_texte.configure(
+            state="disabled",
+            background="#f8fafc",
+            foreground=TEXTE,
+            font=("Arial", 11),
+            padx=10,
+            pady=8,
+        )
 
         entete_dessin = ttk.Frame(panneau_dessin, style="Panel.TFrame")
         entete_dessin.pack(fill="x")
 
-        ttk.Label(entete_dessin, text="Vue cliquable du trajet", style="Panel.TLabel").pack(
+        ttk.Label(entete_dessin, text="Vue du trajet", style="SubTitle.TLabel").pack(
             side="left"
         )
 
@@ -188,7 +253,7 @@ class ApplicationItineraire:
 
         self.canvas = tk.Canvas(
             zone_canvas,
-            background="white",
+            background="#fbfdff",
             highlightthickness=0,
             scrollregion=(0, 0, 1200, 600),
         )
@@ -353,16 +418,26 @@ class ApplicationItineraire:
     def dessiner_message(self, message):
         """Affiche un message au centre du canvas."""
         self.canvas.delete("all")
+        self.canvas.configure(scrollregion=(0, 0, 900, 480))
+        self.canvas.create_rectangle(28, 28, 872, 452, fill="#f8fafc", outline=BORDURE)
+        self.canvas.create_oval(382, 128, 518, 264, fill="#dbeafe", outline="")
         self.canvas.create_text(
             450,
-            230,
+            168,
+            text="APP3",
+            fill=BLEU_FONCE,
+            font=("Arial", 22, "bold"),
+        )
+        self.canvas.create_text(
+            450,
+            300,
             text=message,
-            fill="#4b5563",
-            font=("Arial", 15),
+            fill=TEXTE_DISCRET,
+            font=("Arial", 15, "bold"),
         )
 
     def dessiner_itineraire(self):
-        """Dessine le trajet calculé sous forme de ligne simple."""
+        """Dessine le trajet calculé sous forme de ligne plus lisible."""
         self.canvas.delete("all")
 
         if not self.resultat or not self.resultat["trouve"]:
@@ -370,93 +445,166 @@ class ApplicationItineraire:
             return
 
         chemin = self.resultat["chemin"]
-        largeur = max(900, len(chemin) * 135)
-        hauteur = 430
+        largeur = max(980, len(chemin) * 150)
+        hauteur = 520
         self.canvas.configure(scrollregion=(0, 0, largeur, hauteur))
 
-        y = 200
-        marge = 70
-        espace = 120
+        self.canvas.create_rectangle(24, 24, largeur - 24, hauteur - 24, fill="#f8fafc", outline=BORDURE)
+        self.canvas.create_rectangle(46, 46, largeur - 46, 112, fill="#eff6ff", outline="")
+        self.canvas.create_text(
+            70,
+            70,
+            anchor="w",
+            text="Trajet calculé",
+            font=("Arial", 18, "bold"),
+            fill=TEXTE,
+        )
+        self.canvas.create_text(
+            70,
+            96,
+            anchor="w",
+            text="Temps total estimé : " + formater_temps(self.resultat["temps"]),
+            font=("Arial", 11),
+            fill=BLEU_FONCE,
+        )
+
+        y = 250
+        marge = 90
+        espace = 140
 
         for i in range(len(chemin) - 1):
             x1 = marge + i * espace
             x2 = marge + (i + 1) * espace
             ligne = chemin[i + 1]["ligne"]
             couleur = couleur_ligne(self.reseau, ligne)
-            self.canvas.create_line(x1, y, x2, y, fill=couleur, width=6)
+            self.canvas.create_line(x1, y, x2, y, fill="#dbe4ef", width=14)
+            self.canvas.create_line(x1, y, x2, y, fill=couleur, width=7)
+
+            milieu = (x1 + x2) / 2
+            self.canvas.create_rectangle(
+                milieu - 25,
+                y - 34,
+                milieu + 25,
+                y - 12,
+                fill="white",
+                outline=BORDURE,
+            )
+            self.canvas.create_text(
+                milieu,
+                y - 23,
+                text="ligne " + ligne,
+                fill=TEXTE_DISCRET,
+                font=("Arial", 8, "bold"),
+            )
 
         for i in range(len(chemin)):
             x = marge + i * espace
             station = chemin[i]["station"]
             ligne = chemin[i]["ligne"]
-            rayon = 11
+            rayon = 17
 
             if i == 0:
-                couleur = "#249b54"
+                couleur = VERT
                 texte = "Départ"
             elif i == len(chemin) - 1:
-                couleur = "#d83a34"
+                couleur = ROUGE
                 texte = "Arrivée"
             else:
-                couleur = "#ffffff"
+                couleur = CARTE
                 texte = ""
 
+            self.canvas.create_oval(
+                x - rayon - 6,
+                y - rayon - 6,
+                x + rayon + 6,
+                y + rayon + 6,
+                fill="#e2e8f0",
+                outline="",
+            )
             self.canvas.create_oval(
                 x - rayon,
                 y - rayon,
                 x + rayon,
                 y + rayon,
                 fill=couleur,
-                outline="#1f2933",
+                outline=CARTE,
                 width=2,
+            )
+            self.canvas.create_text(
+                x,
+                y,
+                text=str(i + 1),
+                font=("Arial", 9, "bold"),
+                fill="white" if i == 0 or i == len(chemin) - 1 else TEXTE,
             )
 
             if texte:
-                self.canvas.create_text(x, y - 34, text=texte, font=("Arial", 10, "bold"))
+                self.canvas.create_rectangle(
+                    x - 34,
+                    y - 64,
+                    x + 34,
+                    y - 39,
+                    fill=CARTE,
+                    outline=BORDURE,
+                )
+                self.canvas.create_text(
+                    x,
+                    y - 52,
+                    text=texte,
+                    fill=TEXTE,
+                    font=("Arial", 9, "bold"),
+                )
 
             station_courte = station
             if len(station_courte) > 24:
                 station_courte = station_courte[:21] + "..."
 
+            largeur_carte = 112
+            self.canvas.create_rectangle(
+                x - largeur_carte / 2,
+                y + 40,
+                x + largeur_carte / 2,
+                y + 105,
+                fill=CARTE,
+                outline=BORDURE,
+            )
             self.canvas.create_text(
                 x,
-                y + 38,
+                y + 58,
                 text=station_courte,
-                angle=30,
-                anchor="w",
-                font=("Arial", 9),
-                fill="#1f2933",
+                width=100,
+                font=("Arial", 9, "bold"),
+                fill=TEXTE,
             )
 
             if ligne is not None:
                 self.canvas.create_text(
                     x,
-                    y + 18,
+                    y + 88,
                     text="ligne " + ligne,
                     font=("Arial", 8),
-                    fill="#4b5563",
+                    fill=TEXTE_DISCRET,
                 )
 
             if 0 < i < len(chemin) - 1:
                 ligne_avant = chemin[i]["ligne"]
                 ligne_apres = chemin[i + 1]["ligne"]
                 if ligne_avant != ligne_apres:
+                    self.canvas.create_rectangle(
+                        x - 58,
+                        y - 92,
+                        x + 58,
+                        y - 68,
+                        fill="#fff7ed",
+                        outline="#fed7aa",
+                    )
                     self.canvas.create_text(
                         x,
-                        y - 52,
+                        y - 80,
                         text="Correspondance",
                         fill="#b45309",
                         font=("Arial", 9, "bold"),
                     )
-
-        self.canvas.create_text(
-            70,
-            35,
-            anchor="w",
-            text="Trajet calculé : " + formater_temps(self.resultat["temps"]),
-            font=("Arial", 14, "bold"),
-            fill="#111827",
-        )
 
     def dessiner_reseau(self):
         """Dessine les lignes du réseau de manière simplifiée."""
@@ -469,33 +617,45 @@ class ApplicationItineraire:
         largeur = 1250
         self.canvas.configure(scrollregion=(0, 0, largeur, hauteur))
 
+        self.canvas.create_rectangle(24, 24, largeur - 24, hauteur - 24, fill="#f8fafc", outline=BORDURE)
         self.canvas.create_text(
             45,
-            30,
+            34,
             anchor="w",
-            text="Réseau simplifié : une ligne horizontale par ligne de transport",
-            font=("Arial", 13, "bold"),
-            fill="#111827",
+            text="Réseau simplifié",
+            font=("Arial", 17, "bold"),
+            fill=TEXTE,
+        )
+        self.canvas.create_text(
+            45,
+            60,
+            anchor="w",
+            text="Une ligne horizontale par ligne de transport",
+            font=("Arial", 10),
+            fill=TEXTE_DISCRET,
         )
 
-        y = 80
+        y = 105
         for code_ligne, ligne in lignes.items():
             stations = ligne.get("stations", [])
             couleur = couleur_ligne(self.reseau, code_ligne)
             nom_ligne = ligne.get("nom", "Ligne " + code_ligne)
 
+            self.canvas.create_rectangle(44, y - 24, 1190, y + 38, fill=CARTE, outline=BORDURE)
+
             self.canvas.create_text(
-                45,
+                62,
                 y,
                 anchor="w",
                 text=code_ligne + " - " + nom_ligne,
                 font=("Arial", 10, "bold"),
-                fill="#1f2933",
+                fill=TEXTE,
             )
 
-            x_depart = 220
+            x_depart = 250
             x_fin = 1160
-            self.canvas.create_line(x_depart, y, x_fin, y, fill=couleur, width=4)
+            self.canvas.create_line(x_depart, y, x_fin, y, fill="#dbe4ef", width=10)
+            self.canvas.create_line(x_depart, y, x_fin, y, fill=couleur, width=5)
 
             if len(stations) <= 1:
                 y += 65
@@ -505,7 +665,7 @@ class ApplicationItineraire:
 
             for i in range(len(stations)):
                 x = x_depart + i * pas
-                self.canvas.create_oval(x - 4, y - 4, x + 4, y + 4, fill="white", outline=couleur)
+                self.canvas.create_oval(x - 5, y - 5, x + 5, y + 5, fill=CARTE, outline=couleur)
 
                 if i == 0 or i == len(stations) - 1:
                     station = stations[i]
@@ -516,10 +676,10 @@ class ApplicationItineraire:
                         y + 15,
                         text=station,
                         font=("Arial", 8),
-                        fill="#4b5563",
+                        fill=TEXTE_DISCRET,
                     )
 
-            y += 65
+            y += 72
 
 
 def lancer_graphique():
