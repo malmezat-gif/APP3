@@ -30,11 +30,13 @@ Pour chaque trajet :
 - `itineraire.py`
   Le calcul du meilleur itinéraire.
 - `interface.py`
-  Le menu en console.
+  Le menu en console, gardé comme secours.
+- `interface_graphique.py`
+  L'interface cliquable avec `tkinter`.
 - `visualisation.py`
-  L'affichage graphique du réseau.
+  L'ancienne visualisation avec `networkx`.
 - `main.py`
-  Le fichier à lancer.
+  Le fichier à lancer pour ouvrir la fenêtre.
 - `test_app3.py`
   Les vérifications automatiques simples.
 
@@ -49,7 +51,9 @@ Pour chaque trajet :
 - calcul du plus court chemin avec Dijkstra ;
 - ajout du temps de correspondance quand on change de ligne ;
 - fonctionnement avec plusieurs villes ;
-- visualisation simple du graphe.
+- interface cliquable ;
+- dessin simple du trajet ;
+- vue simplifiée du réseau.
 
 ## Réponses simples pour l'oral
 
@@ -76,11 +80,16 @@ Pour chaque trajet :
   Pour garder le calcul principal simple. Le graphe fonctionne même sans
   ouvrir la fenêtre graphique.
 
+- Pourquoi utiliser tkinter ?
+  Parce que c'est fourni avec Python. On peut faire une interface cliquable
+  sans ajouter une grosse bibliothèque.
+
 ## Ce qu'on a choisi
 
 - Code simple et lisible.
 - Fonctions courtes avec des noms explicites.
 - Docstrings en français simple.
 - Interface console sobre.
-- Visualisation en bonus avec `networkx`.
+- Interface graphique simple avec `tkinter`.
+- Visualisation du trajet directement dans la fenêtre.
 - Tests automatiques sur le mini réseau fourni.

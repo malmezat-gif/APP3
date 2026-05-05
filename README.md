@@ -24,6 +24,9 @@ Depuis le dossier du projet :
 python main.py
 ```
 
+Le programme ouvre une fenêtre cliquable. On choisit une ville, une station de
+départ et une station d'arrivée, puis on clique sur le bouton de calcul.
+
 Pour lancer les tests :
 
 ```bash
@@ -39,11 +42,13 @@ python -m unittest
 - `itineraire.py`
   Calcul du plus court chemin avec Dijkstra.
 - `interface.py`
-  Menu en console.
+  Ancienne interface console, gardée comme secours.
+- `interface_graphique.py`
+  Interface cliquable avec `tkinter`.
 - `visualisation.py`
-  Affichage du graphe avec `networkx` et `matplotlib`.
+  Ancienne visualisation avec `networkx` et `matplotlib`.
 - `main.py`
-  Lancement du programme.
+  Lancement de l'interface graphique.
 - `test_app3.py`
   Tests simples du coeur du projet.
 - `PLAN.md`
@@ -80,9 +85,17 @@ programme les crée automatiquement avec l'ordre des stations de chaque ligne.
 Quand le trajet change de ligne, on ajoute un temps de correspondance de
 120 secondes.
 
-## Visualisation
+## Interface graphique
 
-Le fichier `visualisation.py` permet d'afficher le graphe avec `networkx` et
-`matplotlib`.
+Le fichier `interface_graphique.py` contient l'application cliquable.
 
-Ce bonus reste séparé du reste du code pour garder le coeur du projet simple.
+Elle affiche :
+
+- les informations du réseau choisi ;
+- les champs de recherche des stations ;
+- le trajet sous forme de texte ;
+- un dessin simple du trajet ;
+- une vue simplifiée du réseau complet.
+
+Le calcul principal reste dans `graphe.py` et `itineraire.py`, donc il reste
+facile à expliquer.
