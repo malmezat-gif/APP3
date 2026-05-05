@@ -29,12 +29,8 @@ Pour chaque trajet :
   Le chargement du JSON et les fonctions de graphe.
 - `itineraire.py`
   Le calcul du meilleur itinéraire.
-- `interface.py`
-  Le menu en console, gardé comme secours.
 - `interface_graphique.py`
-  L'interface cliquable avec `tkinter`.
-- `visualisation.py`
-  L'ancienne visualisation avec `networkx`.
+  La fenêtre du programme avec `tkinter`.
 - `main.py`
   Le fichier à lancer pour ouvrir la fenêtre.
 - `test_app3.py`
@@ -51,7 +47,7 @@ Pour chaque trajet :
 - calcul du plus court chemin avec Dijkstra ;
 - ajout du temps de correspondance quand on change de ligne ;
 - fonctionnement avec plusieurs villes ;
-- interface cliquable ;
+- fenêtre cliquable ;
 - dessin simple du trajet ;
 - vue simplifiée du réseau.
 
@@ -76,20 +72,15 @@ Pour chaque trajet :
   Il suffit d'ajouter un nouveau fichier JSON dans le dossier `donnees`.
   Le code lit automatiquement les fichiers disponibles.
 
-- Pourquoi séparer la visualisation ?
-  Pour garder le calcul principal simple. Le graphe fonctionne même sans
-  ouvrir la fenêtre graphique.
-
 - Pourquoi utiliser tkinter ?
-  Parce que c'est fourni avec Python. On peut faire une interface cliquable
-  sans ajouter une grosse bibliothèque.
+  Parce que c'est fourni avec Python. On peut faire une fenêtre simple sans
+  ajouter une grosse bibliothèque.
 
 ## Ce qu'on a choisi
 
 - Code simple et lisible.
 - Fonctions courtes avec des noms explicites.
 - Docstrings en français simple.
-- Interface console sobre.
 - Interface graphique simple avec `tkinter`.
 - Visualisation du trajet directement dans la fenêtre.
 - Tests automatiques sur le mini réseau fourni.

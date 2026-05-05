@@ -12,7 +12,6 @@ from graphe import (
     stations_du_reseau,
     trouver_correspondances,
 )
-from interface import nom_ville_depuis_chemin
 from itineraire import decrire_itineraire, dijkstra, formater_temps
 
 
@@ -54,6 +53,12 @@ def couleur_ligne(reseau, code_ligne):
     return "#2d6cdf"
 
 
+def nom_ville_depuis_chemin(chemin):
+    """Transforme donnees/paris.json en paris."""
+    nom = chemin.split("/")[-1]
+    return nom.replace(".json", "")
+
+
 class ApplicationItineraire:
     """Fenêtre principale de l'application."""
 
@@ -91,7 +96,6 @@ class ApplicationItineraire:
         )
         style.configure("TButton", padding=8, font=("Arial", 10))
         style.configure("Primary.TButton", padding=10, font=("Arial", 10, "bold"))
-        style.map("Primary.TButton", foreground=[("active", "white")])
         style.configure(
             "Primary.TButton",
             background=BLEU,
@@ -229,7 +233,7 @@ class ApplicationItineraire:
         zone.add(panneau_texte, weight=1)
         zone.add(panneau_dessin, weight=3)
 
-        ttk.Label(panneau_texte, text="Itinéraire proposé", style="SubTitle.TLabel").pack(anchor="w")
+        ttk.Label(panneau_texte, text="Itinéraire", style="SubTitle.TLabel").pack(anchor="w")
         self.resultat_texte = tk.Text(panneau_texte, height=9, wrap="word", borderwidth=0)
         self.resultat_texte.pack(fill="both", expand=True, pady=(6, 0))
         self.resultat_texte.configure(
