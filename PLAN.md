@@ -34,7 +34,7 @@ Pour chaque trajet :
 - `main.py`
   Le fichier à lancer pour ouvrir la fenêtre.
 - `test_app3.py`
-  Les vérifications automatiques simples.
+  Les tests simples du projet.
 
 ## Ce qu'il faut pouvoir montrer
 
@@ -70,7 +70,7 @@ Pour chaque trajet :
 
 - Comment ajouter une nouvelle ville ?
   Il suffit d'ajouter un nouveau fichier JSON dans le dossier `donnees`.
-  Le code lit automatiquement les fichiers disponibles.
+  Le code lit les fichiers disponibles dans ce dossier.
 
 - Pourquoi utiliser tkinter ?
   Parce que c'est fourni avec Python. On peut faire une fenêtre simple sans
@@ -83,4 +83,4 @@ Pour chaque trajet :
 - Docstrings en français simple.
 - Interface graphique simple avec `tkinter`.
 - Visualisation du trajet directement dans la fenêtre.
-- Tests automatiques sur le mini réseau fourni.
+- Tests simples sur le mini réseau fourni.

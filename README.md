@@ -14,7 +14,7 @@ Le projet calcule un itinéraire dans un réseau de métro ou de tramway.
 Le programme lit un fichier JSON, construit un graphe, puis cherche le trajet
 le plus rapide entre deux stations avec l'algorithme de Dijkstra.
 
-Le programme fonctionne hors ligne. Il n'utilise pas d'API externe.
+Le programme fonctionne hors ligne. Il n'appelle aucun service en ligne.
 
 ## Lancement
 
@@ -70,7 +70,7 @@ Ce choix est adapté car une station est reliée seulement à quelques stations
 voisines. Une matrice d'adjacence serait plus lourde pour ce type de graphe.
 
 Pour les fichiers où les connexions ne sont pas écrites directement, le
-programme les crée automatiquement avec l'ordre des stations de chaque ligne.
+programme les crée avec l'ordre des stations de chaque ligne.
 
 ## Algorithmes utilisés
 
